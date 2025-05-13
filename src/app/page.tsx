@@ -70,9 +70,6 @@ export default function LoginForm() {
                     <CardTitle className="text-2xl font-bold text-black">
                         Server List
                     </CardTitle>
-                    <CardDescription className="text-gray-500">
-                        Click the Server
-                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -103,27 +100,26 @@ export default function LoginForm() {
                                         data.map((server, index) => (
                                             <tr
                                                 key={index}
-                                                className={`border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${
-                                                    form.host === server.host &&
-                                                    form.username ===
-                                                        server.username
-                                                        ? "bg-gray-100"
-                                                        : ""
+                                                className={`border-b border-gray-200 cursor-pointer transition-colors duration-200 text-black ${
+                                                    form.serverId ===
+                                                    server.serverId
+                                                        ? "bg-black text-white"
+                                                        : "hover:bg-gray-700 hover:text-white"
                                                 }`}
                                                 onClick={() =>
                                                     handleSelectServer(server)
                                                 }
                                             >
-                                                <td className="py-3 px-2 text-left font-medium text-black">
+                                                <td className="py-3 px-2 text-left font-medium">
                                                     {index + 1}
                                                 </td>
-                                                <td className="py-3 px-4 text-left text-black">
+                                                <td className="py-3 px-4 text-left">
                                                     {server.host}
                                                 </td>
-                                                <td className="py-3 px-4 text-left text-black">
+                                                <td className="py-3 px-4 text-left">
                                                     {server.username}
                                                 </td>
-                                                <td className="py-3 px-4 text-left text-black">
+                                                <td className="py-3 px-4 text-left">
                                                     {server.port}
                                                 </td>
                                             </tr>
@@ -140,16 +136,6 @@ export default function LoginForm() {
                                     )}
                                 </tbody>
                             </table>
-                        )}
-
-                        {/* 선택된 서버 정보를 보여줄 수도 있습니다 */}
-                        {form.host && (
-                            <div className="mt-4 p-3 bg-gray-50 rounded-md">
-                                <p className="text-sm text-gray-600">
-                                    Selected server:{" "}
-                                    <strong>{form.host}</strong>
-                                </p>
-                            </div>
                         )}
 
                         <Button
