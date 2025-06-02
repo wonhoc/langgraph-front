@@ -3,24 +3,24 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-import QueryProvider from "./providers/query-provider";
+import Providers from "./providers/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI 챗봇 - GPT 스타일 인터페이스",
-  description: "Next.js와 Tailwind CSS로 만든 GPT 스타일의 LLM 챗봇 인터페이스",
+    title: "하하하",
+    description: "김수한무",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="ko">
-      <body className={inter.className}>
-        <QueryProvider>{children}</QueryProvider>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="ko">
+            <body className={inter.className}>
+                <Providers>{children}</Providers>
+            </body>
+        </html>
+    );
 }

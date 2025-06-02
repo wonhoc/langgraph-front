@@ -2,8 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,56 +10,41 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
+    CardFooter,
 } from "@/components/ui/card";
-import { rtnServerInfo } from "@/types/sshType";
-import { useServerInfoList, usePostSSHConnect } from "@/hooks/sshMutation";
+import { LoginRequest, LoginResponse } from "@/types/user.type";
+import { useLoginMutation } from "@/hooks/user.mutation";
+import { errorMessage } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
-    const router = useRouter();
-
-    // 페이지 이동 함수
-    const handleNavigateToSshRegister = () => {
-        router.push("/ssh/register"); // 다른 페이지로 이동
-    };
-
     const [errorMsg, setErrorMsg] = useState<string>("");
-
-    const [form, setForm] = useState<rtnServerInfo>({
-        serverId: 0,
-        host: "",
-        username: "",
-        port: 0,
+    const router = useRouter();
+    // FormData 생성
+    const [form, setForm] = useState<LoginRequest>({
+        email: "",
+        password: "",
     });
 
-    const { data, isLoading, refetch } = useServerInfoList();
-
-    // 컴포넌트 마운트 시 데이터 로드
-    useEffect(() => {
-        refetch();
-    }, [refetch]);
-    const postSSHConnect = usePostSSHConnect();
-
-    useEffect(() => {}, [data]);
-
-    // 서버 선택 처리
-    const handleSelectServer = (server: rtnServerInfo) => {
-        setForm(server);
-    };
+    const { mutate } = useLoginMutation();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        // Handle login logic here
 
-        console.log(form);
+        mutate(form, {
+            onSuccess: (loginResponse: LoginResponse) => {},
+            onError: (error) => {
+                const rtnMessage = errorMessage(error);
+                setErrorMsg(rtnMessage);
+            },
+        });
+    };
 
-        if (form.serverId) {
-            // serverId만 전송
-            postSSHConnect.mutate({ serverId: form.serverId });
-        } else {
-            setErrorMsg("서버를 선택해주세요");
-        }
+    const handleNavigateToSshRegister = () => {
+        router.push("/ssh/register"); // 다른 페이지로 이동
     };
 
     return (
@@ -68,82 +52,63 @@ export default function LoginForm() {
             <Card className="w-full max-w-md border border-gray-200 shadow-sm">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-black">
-                        Server List
+                        Login
                     </CardTitle>
+                    <CardDescription
+                        className={`${
+                            errorMsg ? "text-red-500" : "text-gray-500"
+                        }`}
+                    >
+                        {errorMsg ||
+                            "Enter your credentials to access your account"}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {isLoading ? (
-                            <div className="py-8 text-center">
-                                Loading servers...
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-black">
+                                E-MAIL
+                            </Label>
+                            <Input
+                                value={form.email}
+                                onChange={(e) =>
+                                    setForm({ ...form, email: e.target.value })
+                                }
+                                id="email"
+                                type="text"
+                                placeholder="Email"
+                                required
+                                className="border-gray-300 focus:border-black focus:ring-black"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="password" className="text-black">
+                                PASSWORD
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    value={form.password}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            password: e.target.value,
+                                        })
+                                    }
+                                    id="password"
+                                    type="password"
+                                    placeholder="password"
+                                    required
+                                    className="border-gray-300 focus:border-black focus:ring-black pr-10"
+                                />
                             </div>
-                        ) : (
-                            <table className="w-full border-collapse">
-                                <thead>
-                                    <tr className="border-b border-gray-200">
-                                        <th className="py-3 px-2 text-left font-medium text-black">
-                                            #
-                                        </th>
-                                        <th className="py-3 px-4 text-left font-medium text-black">
-                                            Host
-                                        </th>
-                                        <th className="py-3 px-4 text-left font-medium text-black">
-                                            Username
-                                        </th>
-                                        <th className="py-3 px-4 text-left font-medium text-black">
-                                            Port
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {data && data.length > 0 ? (
-                                        data.map((server, index) => (
-                                            <tr
-                                                key={index}
-                                                className={`border-b border-gray-200 cursor-pointer transition-colors duration-200 text-black ${
-                                                    form.serverId ===
-                                                    server.serverId
-                                                        ? "bg-black text-white"
-                                                        : "hover:bg-gray-700 hover:text-white"
-                                                }`}
-                                                onClick={() =>
-                                                    handleSelectServer(server)
-                                                }
-                                            >
-                                                <td className="py-3 px-2 text-left font-medium">
-                                                    {index + 1}
-                                                </td>
-                                                <td className="py-3 px-4 text-left">
-                                                    {server.host}
-                                                </td>
-                                                <td className="py-3 px-4 text-left">
-                                                    {server.username}
-                                                </td>
-                                                <td className="py-3 px-4 text-left">
-                                                    {server.port}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td
-                                                colSpan={4}
-                                                className="py-4 text-center text-gray-500"
-                                            >
-                                                No servers found
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        )}
+                        </div>
 
                         <Button
                             type="submit"
                             className="w-full bg-black text-white hover:bg-gray-800"
-                            disabled={!form.host}
                         >
-                            Connect to Server
+                            Sign In
                         </Button>
                     </form>
                 </CardContent>
