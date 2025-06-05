@@ -1,13 +1,14 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import mainApi from "@/lib/main.axios";
 
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: "credentials",
             credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
+                email: { label: "email", type: "email" },
+                password: { label: "password", type: "password" },
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
@@ -15,22 +16,22 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 try {
-                    const response = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_BASE_URL_MAIN}/api/main/auth/login`,
-                        {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(credentials),
-                        }
+                    const loginData = {
+                        email: credentials.email,
+                        password: credentials.password,
+                    };
+                    const response = await mainApi.post(
+                        "/auth/login",
+                        loginData
                     );
 
-                    const data = await response.json();
+                    const data = await response.data;
 
-                    if (response.ok && data.token) {
+                    if (data.access_token) {
                         return {
-                            id: data.user?.id || data.id,
-                            email: credentials.email,
-                            name: credentials.email,
+                            id: data.id || data.id,
+                            email: loginData.email,
+                            name: loginData.email,
                             accessToken: data.access_token,
                             refreshToken: data.refresh_token,
                         };
@@ -56,7 +57,7 @@ export const authOptions: NextAuthOptions = {
         },
     },
     pages: {
-        signIn: "/login",
+        signIn: "/",
     },
     session: {
         strategy: "jwt",

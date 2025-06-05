@@ -15,7 +15,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { SSHLogin, rtnSSHLogin } from "@/types/sshType";
-import { useGetSSHMutation } from "@/hooks/sshMutation";
 import { errorMessage } from "@/lib/utils";
 
 export default function LoginForm() {

@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { LoginRequest, LoginResponse } from "@/types/user.type";
 import { useLoginMutation } from "@/hooks/user.mutation";
-import { errorMessage } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
@@ -32,15 +31,8 @@ export default function LoginForm() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle login logic here
 
-        mutate(form, {
-            onSuccess: (loginResponse: LoginResponse) => {},
-            onError: (error) => {
-                const rtnMessage = errorMessage(error);
-                setErrorMsg(rtnMessage);
-            },
-        });
+        mutate(form);
     };
 
     const handleNavigateToSshRegister = () => {
