@@ -5,12 +5,11 @@ import {
   UpdateBoardRequest,
   GetBoardsResponse,
 } from "@/types/board.type";
+import { RtnCommonType } from "@/types/commonType";
 
 // basic path: /api/main
 export const boardApi = {
-  getBoards: async (
-    params?: SearchBoardRequest
-  ): Promise<GetBoardsResponse> => {
+  getBoards: async (params?: SearchBoardRequest): Promise<RtnCommonType> => {
     const response = await mainApi.get("/board", { params });
     return response.data;
   },

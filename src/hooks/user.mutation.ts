@@ -4,27 +4,27 @@ import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export const useLoginMutation = () => {
-    const router = useRouter();
+  const router = useRouter();
 
-    return useMutation({
-        mutationFn: async (loginRequest: LoginRequest) => {
-            const result = await signIn("credentials", {
-                email: loginRequest.email,
-                password: loginRequest.password,
-                redirect: false,
-            });
+  return useMutation({
+    mutationFn: async (loginRequest: LoginRequest) => {
+      const result = await signIn("credentials", {
+        email: loginRequest.email,
+        password: loginRequest.password,
+        redirect: false,
+      });
 
-            if (result?.error) {
-                throw new Error(result.error);
-            }
+      if (result?.error) {
+        throw new Error(result.error);
+      }
 
-            return result;
-        },
-        onSuccess: () => {
-            router.push("/chat"); // 로그인 성공 시 이동
-        },
-        onError: () => {
-            console.log("error");
-        },
-    });
+      return result;
+    },
+    onSuccess: () => {
+      router.push("/board"); // 로그인 성공 시 이동
+    },
+    onError: () => {
+      console.log("error");
+    },
+  });
 };
