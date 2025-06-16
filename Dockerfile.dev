@@ -1,26 +1,21 @@
-# 빌드 단계
-FROM node:22-alpine AS builder
+# 개발 환경용 Dockerfile (빌드 없이 dev 서버 실행)
+FROM node:22-alpine
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 의존성 파일 복사
-COPY package.json package-lock.json* ./
+# 환경 변수 먼저 설정
+ENV NODE_ENV=development
 
-# 의존성 설치
-RUN npm install
+# 패키지 파일 복사 및 설치
+COPY package.json package-lock.json* ./
+RUN npm install --legacy-peer-deps
 
 # 소스 코드 복사
 COPY . .
 
-# 개발 환경 빌드
-RUN npm run build:dev
+# 포트 설정 (필요에 따라 3010으로 변경)
+EXPOSE 3010
 
-# 서버 실행 포트 설정
-EXPOSE 3000
-
-# 개발 환경으로 설정
-ENV NODE_ENV=development
-
-# 빌드된 앱 실행
-CMD ["npm", "run", "start:dev"]
+# 개발 서버 실행 (빌드 안함)
+CMD ["npm", "run", "dev"]

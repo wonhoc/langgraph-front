@@ -5,12 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { getBoards, getBoard, createBoard } from "@/service/board.service";
-import {
-  SearchBoardRequest,
-  GetBoardsResponse,
-  CreateBoardRequest,
-  GetBoardResponse,
-} from "@/types/board.type";
+import { SearchBoardRequest, CreateBoardRequest } from "@/types/board.type";
 import { useRouter } from "next/navigation";
 import { RtnCommonType } from "@/types/commonType";
 import { useEffect } from "react";

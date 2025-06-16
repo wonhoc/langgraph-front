@@ -53,9 +53,7 @@ export default function PostPage() {
                 <Textarea
                   id="content"
                   value={form.content}
-                  onChange={(e) =>
-                    setForm({ ...form, content: e.target.value })
-                  }
+                  onChange={(content) => setForm({ ...form, content: content })}
                   placeholder="게시글 내용을 입력하세요"
                   rows={10}
                   required

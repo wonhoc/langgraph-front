@@ -61,7 +61,7 @@ export default function PostPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-white p-4">
+    <main className=" flex-1 min-h-screen items-center justify-center bg-white p-4">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
@@ -114,6 +114,14 @@ export default function PostPage() {
                 >
                   <Edit className="w-4 h-4" />
                   수정
+                </Button>
+                <Button
+                  onClick={() => handleNavigate(`/delete/${boardId}`)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  삭제
                 </Button>
               </div>
             </CardContent>

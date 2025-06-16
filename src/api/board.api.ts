@@ -3,7 +3,6 @@ import {
   SearchBoardRequest,
   CreateBoardRequest,
   UpdateBoardRequest,
-  GetBoardsResponse,
 } from "@/types/board.type";
 import { RtnCommonType } from "@/types/commonType";
 

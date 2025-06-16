@@ -2,8 +2,6 @@ import { boardApi } from "@/api/board.api";
 import {
   SearchBoardRequest,
   CreateBoardRequest,
-  UpdateBoardRequest,
-  GetBoardsResponse,
   GetBoardResponse,
 } from "@/types/board.type";
 import { RtnCommonType } from "@/types/commonType";
@@ -19,7 +17,6 @@ export const getBoards = async (
 
 // 게시글 상세 조회
 export const getBoard = async (id: number): Promise<GetBoardResponse> => {
-  console.log(id);
   const res = await boardApi.getBoard(id);
 
   return res;
