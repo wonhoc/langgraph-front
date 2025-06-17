@@ -28,7 +28,7 @@ interface MenuTreeProps {
   onEdit: (menu: MenuItem) => void;
   onDelete: (menuId: number) => void;
   onToggleActive: (menuId: number, isActive: boolean) => void;
-  onAddChild: (parentId: number) => void;
+  onAddChild: (parentId: number, parentName: string) => void;
 }
 
 export function MenuTree({
@@ -107,7 +107,9 @@ export function MenuTree({
                     <Edit className="w-4 h-4 mr-2" />
                     수정
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onAddChild(item.id)}>
+                  <DropdownMenuItem
+                    onClick={() => onAddChild(item.id, item.name)}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     하위 메뉴 추가
                   </DropdownMenuItem>

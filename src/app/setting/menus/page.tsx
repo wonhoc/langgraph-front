@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, RefreshCw, Settings } from "lucide-react";
 import { MenuTree } from "@/components/menu-tree";
-import { useMenus } from "@/hooks/menu.mutation";
+import { useMenus, useDeleteMenu } from "@/hooks/menu.mutation";
 import { deleteMenu, updateMenu } from "@/lib/menu-api";
 import type { MenuItem } from "@/types/menu";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,7 @@ export default function MenuManagementPage() {
 
   // useMenus 훅만 사용하여 데이터 관리
   const { data, isLoading, refetch } = useMenus();
-
+  const { mutate: deleteMutate } = useDeleteMenu();
   // data가 변경될 때마다 menus 상태 업데이트
   const menus = data?.data || [];
 
@@ -58,15 +57,15 @@ export default function MenuManagementPage() {
   };
 
   const handleEdit = (menu: MenuItem) => {
-    window.location.href = `/settings/menus/${menu.id}/edit`;
+    window.location.href = `/setting/menus/${menu.id}/update`;
   };
 
   const handleDelete = async (menuId: number) => {
     if (!confirm("정말로 이 메뉴를 삭제하시겠습니까?")) return;
 
     try {
-      await deleteMenu(menuId);
-      // 삭제 후 데이터 다시 가져오기
+      await deleteMutate(menuId);
+
       await refetch();
     } catch (error) {
       alert("메뉴 삭제 중 오류가 발생했습니다.");
@@ -83,8 +82,12 @@ export default function MenuManagementPage() {
     }
   };
 
-  const handleAddChild = (parentId: number) => {
-    window.location.href = `/settings/menus/new?parentId=${parentId}`;
+  const handleAddChild = (parentId: number, parentName: string) => {
+    router.push(
+      `/setting/menus/register?parentId=${parentId}&parentName=${encodeURIComponent(
+        parentName
+      )}`
+    );
   };
 
   const handleRefresh = () => {

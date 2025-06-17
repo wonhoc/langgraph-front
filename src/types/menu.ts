@@ -24,11 +24,12 @@ export interface MenuConfig {
   target?: string;
   [key: string]: any;
 }
+
 export type CreateMenuRequest = {
   name?: string;
   description?: string;
   url?: string;
-  icon?: string;
+  icon: string;
   parentId?: number | null | undefined;
   sortOrder?: number;
   level?: number;
@@ -37,6 +38,9 @@ export type CreateMenuRequest = {
   type?: string;
   permission?: string;
   config?: string;
-  createdBy?: string;
-  updatedBy?: string;
 };
+
+export interface UpdateMenuRequest {
+  menuId: number;
+  data: CreateMenuRequest;
+}

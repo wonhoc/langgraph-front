@@ -7,9 +7,10 @@ interface NewMenuPageProps {
 }
 
 export default function NewMenuPage({ searchParams }: NewMenuPageProps) {
-  const parentId = searchParams.parentId
-    ? Number(searchParams.parentId)
-    : undefined;
+  const parentId =
+    searchParams && searchParams.parentId
+      ? Number(searchParams.parentId)
+      : undefined;
 
   return (
     <div className="p-8">

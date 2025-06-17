@@ -1,18 +1,36 @@
 import mainApi from "@/lib/main.axios";
-import { createBoard } from "@/service/board.service";
-import { createMenus } from "@/service/menus.service";
 import { RtnCommonType } from "@/types/commonType";
+import { CreateMenuRequest } from "@/types/menu";
 
 // basic path: /api/main
 export const menusApi = {
   getMenus: async (): Promise<RtnCommonType> => {
-    const response = await mainApi.get("/menus");
+    const response = await mainApi.get("/menus/tree");
 
     return response.data;
   },
 
-  createMenus: async (): Promise<RtnCommonType> => {
-    const response = await mainApi.post("/menus");
+  createMenus: async (
+    createMenuRequest: CreateMenuRequest
+  ): Promise<RtnCommonType> => {
+    const response = await mainApi.post("/menus", createMenuRequest);
+
+    return response.data;
+  },
+
+  updateMenus: async (
+    menuId: number,
+    createMenuRequest: CreateMenuRequest
+  ): Promise<RtnCommonType> => {
+    console.log(menuId);
+    const response = await mainApi.patch(`/menus/${menuId}`, createMenuRequest);
+
+    return response.data;
+  },
+
+  deleteMenus: async (menuId: number): Promise<RtnCommonType> => {
+    console.log(menuId);
+    const response = await mainApi.delete(`/menus/${menuId}`);
 
     return response.data;
   },

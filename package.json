@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",
+    "dev:debug": "NODE_OPTIONS='--inspect' next dev -p 3010",
     "dev:dev": "NODE_ENV=development next dev -p 3010",
     "dev:prod": "NODE_ENV=production next dev -p 3010",
     "build:dev": "NODE_ENV=development next build",

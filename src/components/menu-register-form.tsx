@@ -20,17 +20,18 @@ import { DynamicIcon } from "@/components/dynamic-icon";
 import {
   getAvailableIcons,
   getAvailablePermissions,
-  createMenu,
   updateMenu,
 } from "@/lib/menu-api";
 import { getMenus } from "@/lib/menu";
 import type { MenuItem } from "@/types/menu";
-import { useCreateMenu } from "@/hooks/menu.mutation";
+import { useCreateMenu, useUpdateMenu } from "@/hooks/menu.mutation";
+import { CreateMenuRequest } from "@/types/menu";
+import { useSearchParams } from "next/navigation";
 
 interface MenuFormProps {
   menu?: MenuItem;
   parentId?: number;
-  mode: "create" | "edit";
+  mode: "create" | "update";
 }
 
 export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
@@ -40,12 +41,14 @@ export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
   const [availablePermissions] = useState(getAvailablePermissions());
   const [parentMenus, setParentMenus] = useState<MenuItem[]>([]);
 
-  const [formData, setFormData] = useState({
+  const searchParams = useSearchParams();
+  const parentName = searchParams.get("parentName");
+
+  const [formData, setFormData] = useState<CreateMenuRequest>({
     name: menu?.name || "",
     description: menu?.description || "",
     url: menu?.url || "",
     icon: menu?.icon || "circle",
-    parentId: parentId || menu?.parentId || null,
     sortOrder: menu?.sortOrder || 1,
     level: menu?.level || 1,
     isActive: menu?.isActive ?? true,
@@ -53,18 +56,18 @@ export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
     type: menu?.type || "menu",
     permission: menu?.permission || "",
     config: menu?.config || "{}",
-    createdBy: menu?.createdBy || "admin",
-    updatedBy: "admin",
+    parentId: parentId ? Number(parentId) : null,
   });
 
-  const { mutate } = useCreateMenu();
+  const { mutate: createMenu } = useCreateMenu();
+  const { mutate: updateMenu } = useUpdateMenu();
 
   useEffect(() => {
     async function fetchParentMenus() {
       const menus = await getMenus();
       // 현재 수정 중인 메뉴와 그 하위 메뉴들은 부모로 선택할 수 없도록 필터링
       const filteredMenus = menus.filter((m) => {
-        if (mode === "edit" && menu) {
+        if (mode === "update" && menu) {
           return m.id !== menu.id && !isDescendant(m, menu.id, menus);
         }
         return true;
@@ -92,26 +95,17 @@ export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
     setIsSubmitting(true);
 
     try {
-      // config JSON 유효성 검사
-      try {
-        JSON.parse(formData.config);
-      } catch (e) {
-        alert("설정(Config)은 유효한 JSON 형식이어야 합니다.");
-        setIsSubmitting(false);
-        return;
-      }
-
       if (mode === "create") {
-        mutate(formData);
-      } else if (menu) {
-        await updateMenu(menu.id, formData);
+        createMenu(formData);
+      } else if (mode === "update") {
+        console.log("123");
+        updateMenu({
+          menuId: menu?.id!,
+          data: formData,
+        });
       }
-
-      router.push("/settings/menus");
-      router.refresh();
     } catch (error) {
       alert("오류가 발생했습니다.");
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -124,7 +118,6 @@ export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
 
     setFormData({
       ...formData,
-      parentId,
       level,
     });
   };
@@ -172,7 +165,7 @@ export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
               id="description"
               value={formData.description}
               onChange={(e) =>
-                setFormData({ ...formData, description: formData.description })
+                setFormData({ ...formData, description: e.target.value })
               }
               placeholder="메뉴에 대한 설명을 입력하세요"
             />
@@ -230,34 +223,15 @@ export function MenuForm({ menu, parentId, mode }: MenuFormProps) {
             </div>
           </div>
 
-          {mode === "edit" && (
+          {parentId != null && (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="parentId">부모 메뉴</Label>
-                <Select
-                  value={String(formData.parentId)}
-                  onValueChange={handleParentChange}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="부모 메뉴를 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="null">최상위 메뉴</SelectItem>
-                    {parentMenus.map((parentMenu) => (
-                      <SelectItem
-                        key={parentMenu.id}
-                        value={String(parentMenu.id)}
-                      >
-                        {"  ".repeat(parentMenu.level - 1)}
-                        <DynamicIcon
-                          name={parentMenu.icon}
-                          className="w-4 h-4 inline mr-2"
-                        />
-                        {parentMenu.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>부모 메뉴</Label>
+                <div className="flex items-center p-3 border rounded-md bg-gray-50">
+                  {parentName}
+                </div>
+                {/* hidden input으로 값 전달 */}
+                <input type="hidden" name="parentId" value={parentId} />
               </div>
             </div>
           )}
